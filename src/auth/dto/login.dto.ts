@@ -1,7 +1,7 @@
 import { Expose, Transform } from 'class-transformer';
 import { isEmpty } from 'lodash';
 
-export class LoginResponseDto {
+export class LoginDto {
   @Expose()
   email: string;
 

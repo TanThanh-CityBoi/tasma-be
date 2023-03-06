@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as chalk from 'chalk';
 import { AllExceptionsFilter } from './middlewares';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,10 +15,16 @@ async function bootstrap() {
   });
   app.enableShutdownHooks();
   app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalPipes(
+    new ValidationPipe({ transform: true, disableErrorMessages: false }),
+  );
 
   const PORT = process.env.PORT;
-  await app.listen(PORT, () => {
-    console.log(chalk.blueBright(`SERVER STARTED ON PORT ${PORT}!`));
+  await app.listen(PORT, async () => {
+    console.log(
+      chalk.blueBright(`APPLICATION IS RUNNING ON: `),
+      await app.getUrl(),
+    );
   });
 }
 bootstrap();
