@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { UserService } from 'src/users/user.service';
-import { response, transformer } from 'src/utils';
+import { response, transformData } from 'src/utils';
 import { LoginDto, SignUpDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/schemas/user.schema';
@@ -31,7 +31,7 @@ export class AuthService {
         expiresIn: this.config.get('TOKEN_EXPTIME'),
       },
     );
-    return transformer(LoginDto, { user, accessToken });
+    return transformData(LoginDto, { user, accessToken });
   }
 
   async signUp(data: any) {
@@ -53,7 +53,7 @@ export class AuthService {
       newUser.gender = gender;
 
       const result = await this.userService.createUser(newUser);
-      return transformer(SignUpDto, result);
+      return transformData(SignUpDto, result);
     } catch (error) {
       return response(500, 'INTERNAL_SERVER_ERROR', null, error);
     }
