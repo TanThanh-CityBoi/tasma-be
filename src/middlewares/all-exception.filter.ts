@@ -5,12 +5,13 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+import chalk from 'chalk';
 import { Response } from 'express';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception, host: ArgumentsHost) {
-    console.log('==================ERROR:', exception);
+    console.log(chalk.red('==================ERROR:', exception));
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     let statusCode =

@@ -7,6 +7,7 @@ import { TransformInterceptor } from './middlewares';
 import { AuthModule } from './auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './users/user.module';
+import { ConfigService } from './config.service';
 
 @Module({
   imports: [
@@ -15,7 +16,13 @@ import { UserModule } from './users/user.module';
     ConfigModule.forRoot({
       envFilePath: '.env',
     }),
-    MongooseModule.forRoot(process.env.MONGODB_URI),
+    // MongooseModule.forRoot(new ConfigService().get('DB_URL')),
+    MongooseModule.forRootAsync({
+      useFactory: async (config: ConfigService) => ({
+        uri: config.get('DB_URL'),
+      }),
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AppController],
   providers: [

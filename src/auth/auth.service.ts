@@ -1,21 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
 import { isEmpty } from 'lodash';
 import { UserService } from 'src/users/user.service';
 import { response, transformer } from 'src/utils';
 import { LoginDto, SignUpDto } from './dto';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/schemas/user.schema';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from 'src/config.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly userService: UserService,
+    private readonly config: ConfigService,
+  ) {}
   async login(data: any) {
     const { email } = data;
-    const user = { email, firstname: 'first name', lastName: 'lastname' };
-    return plainToClass(LoginDto, user, {
-      excludeExtraneousValues: true,
-    });
+    if (!email) return response(400, 'Incorrect email or password');
+    const user = await this.userService.getUser({ email });
+    if (isEmpty(user)) {
+      return response(400, 'Incorrect email or password');
+    }
+    const accessToken = this.jwtService.sign(
+      {
+        userId: user._id,
+      },
+      {
+        secret: this.config.get('JWT_SECRET'),
+        expiresIn: this.config.get('TOKEN_EXPTIME'),
+      },
+    );
+    return transformer(LoginDto, { user, accessToken });
   }
 
   async signUp(data: any) {
