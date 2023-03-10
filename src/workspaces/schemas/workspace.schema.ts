@@ -1,11 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
-import { Workspace } from 'src/workspaces/schemas';
+import { HydratedDocument } from 'mongoose';
 
-export type UserDocument = HydratedDocument<User>;
+export type WorkspaceDocument = HydratedDocument<Workspace>;
 
 @Schema()
-export class User {
+export class Workspace {
   @Prop({ required: true, unique: true })
   email: string;
 
@@ -27,9 +26,6 @@ export class User {
   @Prop({ default: false })
   emailVerified: boolean;
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Workspace' }] })
-  workspaces: Workspace;
-
   @Prop({ default: Date.now() })
   createdAt?: Date;
 
@@ -37,4 +33,4 @@ export class User {
   updatedAt?: Date;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const WorkspaceSchema = SchemaFactory.createForClass(Workspace);
