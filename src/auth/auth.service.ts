@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { isEmpty } from 'lodash';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from 'src/users/user.service';
-import { response, transformData } from 'src/utils';
-import { LoginDto, SignUpDto } from './dto';
-import * as bcrypt from 'bcrypt';
-import { User } from 'src/users/schemas/user.schema';
+import { GOOGLE_AUTH_URL, transformData } from 'src/utils';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from 'src/config.service';
+import { LoginRes, SignUpRes } from './dto';
+import { User } from 'src/users/schemas';
+import { isEmpty } from 'lodash';
+import * as bcrypt from 'bcrypt';
+import axios from 'axios';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -16,46 +17,86 @@ export class AuthService {
     private readonly config: ConfigService,
   ) {}
   async login(data: any) {
-    const { email } = data;
-    if (!email) return response(400, 'Incorrect email or password');
+    const { email, password } = data;
+    if (!email) throw new BadRequestException('Incorrect email or password');
     const user = await this.userService.getUser({ email });
     if (isEmpty(user)) {
-      return response(400, 'Incorrect email or password');
+      throw new BadRequestException('Incorrect email or password');
     }
+    const isCorrectPassword = bcrypt.compareSync(password, user.password);
+    if (isEmpty(user) || !isCorrectPassword) {
+      throw new BadRequestException('Incorrect email or password');
+    }
+    //
     const accessToken = this.jwtService.sign(
-      {
-        userId: user._id,
-      },
+      { userId: user._id },
       {
         secret: this.config.get('JWT_SECRET'),
         expiresIn: this.config.get('TOKEN_EXPTIME'),
       },
     );
-    return transformData(LoginDto, { user, accessToken });
+    return transformData(LoginRes, { ...user, accessToken });
   }
 
   async signUp(data: any) {
-    try {
-      const { email, firstName, lastName, gender, password, confirmPassword } =
-        data;
-      if (password != confirmPassword) {
-        return response(400, 'Password and ConfirmPassword does not match');
-      }
-      const existedUser = await this.userService.getUser({ email });
-      if (!isEmpty(existedUser)) {
-        return response(400, 'Email have already used');
-      }
-      const newUser = new User();
-      newUser.email = email;
-      newUser.firstName = firstName;
-      newUser.lastName = lastName;
-      newUser.password = bcrypt.hashSync(password, 10);
-      newUser.gender = gender;
-
-      const result = await this.userService.createUser(newUser);
-      return transformData(SignUpDto, result);
-    } catch (error) {
-      return response(500, 'INTERNAL_SERVER_ERROR', null, error);
+    const { email, firstName, lastName, gender, password, confirmPassword } =
+      data;
+    if (password != confirmPassword) {
+      throw new BadRequestException(
+        'Password and ConfirmPassword does not match',
+      );
     }
+    //
+    const existedUser = await this.userService.getUser({ email });
+    if (!isEmpty(existedUser)) {
+      throw new BadRequestException('Email have already used');
+    }
+    //
+    const newUser = new User();
+    newUser.email = email;
+    newUser.firstName = firstName;
+    newUser.lastName = lastName;
+    newUser.password = bcrypt.hashSync(password, 10);
+    newUser.gender = gender;
+    const result = await this.userService.createUser(newUser);
+    return transformData(SignUpRes, result);
+  }
+
+  async loginWithGoogle(data: any) {
+    const { googleAccessToken } = data;
+    const response = await axios.get(GOOGLE_AUTH_URL, {
+      headers: {
+        Authorization: `Bearer ${googleAccessToken}`,
+      },
+    });
+    const firstName = response.data.given_name;
+    const lastName = response.data.family_name;
+    const email = response.data.email;
+
+    const existedUser = await this.userService.getUser({ email });
+    if (!isEmpty(existedUser)) {
+      const accessToken = this.jwtService.sign(
+        { userId: existedUser._id },
+        {
+          secret: this.config.get('JWT_SECRET'),
+          expiresIn: this.config.get('TOKEN_EXPTIME'),
+        },
+      );
+      return transformData(LoginRes, { ...existedUser, accessToken });
+    }
+
+    const newUser = new User();
+    newUser.firstName = firstName;
+    newUser.lastName = lastName;
+    newUser.email = email;
+    const accessToken = this.jwtService.sign(
+      { userId: existedUser._id },
+      {
+        secret: this.config.get('JWT_SECRET'),
+        expiresIn: this.config.get('TOKEN_EXPTIME'),
+      },
+    );
+    const createResult = await this.userService.createUser(newUser);
+    return transformData(LoginRes, { ...createResult, accessToken });
   }
 }

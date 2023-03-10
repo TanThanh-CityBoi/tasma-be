@@ -1,7 +1,6 @@
 import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto';
-import { SignUpDto } from './dto/sign-up.dto';
+import { CreateUserDto, GoogleLoginDto, LoginRes, SignUpRes } from './dto';
 import { LocalAuthGuard } from './local-auth.guard';
 
 @Controller('auth')
@@ -10,12 +9,17 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  public login(@Request() req): LoginDto {
+  public login(@Request() req): Promise<LoginRes> {
     return req.user;
   }
 
   @Post('sign-up')
-  public async signUp(@Body() body: SignUpDto) {
+  public async signUp(@Body() body: CreateUserDto): Promise<SignUpRes> {
     return await this.authService.signUp(body);
+  }
+
+  @Post('google-login')
+  public async googleLogin(@Body() body: GoogleLoginDto): Promise<LoginRes> {
+    return await this.authService.loginWithGoogle(body);
   }
 }

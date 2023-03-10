@@ -14,13 +14,13 @@ export class UserService {
         lastName,
         password,
       });
-      return newUser;
+      return newUser._doc;
     } catch (error) {
       throw Error(error);
     }
   }
 
   async getUser(condition: any) {
-    return await this.userRepository.findOne(condition);
+    return (await this.userRepository.findOne(condition))?._doc;
   }
 }

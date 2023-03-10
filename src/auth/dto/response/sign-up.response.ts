@@ -2,7 +2,7 @@ import { Expose, Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, Length } from 'class-validator';
 import { isEmpty } from 'lodash';
 
-export class SignUpDto {
+export class SignUpRes {
   @Expose()
   _id: string;
 

@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import * as chalk from 'chalk';
 import { AllExceptionsFilter } from './middlewares';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,7 +20,8 @@ async function bootstrap() {
     new ValidationPipe({ transform: true, disableErrorMessages: false }),
   );
 
-  const PORT = process.env.PORT;
+  const config = app.get(ConfigService);
+  const PORT = config.get('PORT');
   await app.listen(PORT, async () => {
     console.log(
       chalk.blueBright(`APPLICATION IS RUNNING ON: `),

@@ -1,9 +1,15 @@
 import { Expose, Transform } from 'class-transformer';
 import { isEmpty } from 'lodash';
 
-export class LoginDto {
+export class LoginRes {
+  @Expose()
+  _id: string;
+
   @Expose()
   email: string;
+
+  @Expose()
+  accessToken: string;
 
   @Expose()
   firstName: string;
@@ -18,4 +24,19 @@ export class LoginDto {
       : `${obj.firstName} ${obj.lastName}`,
   )
   fullName: string;
+
+  @Expose()
+  gender: string;
+
+  @Expose()
+  avatar: string;
+
+  @Expose()
+  emailVerified: boolean;
+
+  @Expose()
+  createdAt: string;
+
+  @Expose()
+  updatedAt: string;
 }
