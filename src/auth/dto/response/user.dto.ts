@@ -1,7 +1,7 @@
 import { Expose, Transform } from 'class-transformer';
 import { isEmpty } from 'lodash';
 
-export class SignUpRes {
+export class UserDto {
   @Expose()
   _id: string;
 

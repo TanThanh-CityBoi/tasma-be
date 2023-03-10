@@ -35,7 +35,10 @@ export class AuthService {
         expiresIn: this.config.get('TOKEN_EXPTIME'),
       },
     );
-    return transformData(LoginRes, { ...user, accessToken });
+    return transformData(LoginRes, {
+      userInfo: user,
+      accessToken,
+    });
   }
 
   async signUp(data: any) {
