@@ -1,30 +1,34 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { User } from 'src/users/schemas';
 
 export type WorkspaceDocument = HydratedDocument<Workspace>;
 
 @Schema()
 export class Workspace {
-  @Prop({ required: true, unique: true })
-  email: string;
+  @Prop()
+  name: string;
 
   @Prop()
-  password: string;
+  description: string;
 
-  @Prop()
-  firstName: string;
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }] })
+  tasks: [];
 
-  @Prop()
-  lastName: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Setting' })
+  settings: {};
 
-  @Prop({ default: 'default-avt.png' })
-  avatar: string;
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
+  members: Array<User>;
 
-  @Prop({ default: 1 })
-  gender: number; // 1: male, 2: fermale, 3: other
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  host: User;
 
-  @Prop({ default: false })
-  emailVerified: boolean;
+  @Prop({ default: 'default.png' })
+  avata: string;
+
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Channel' }] })
+  channels: [];
 
   @Prop({ default: Date.now() })
   createdAt?: Date;

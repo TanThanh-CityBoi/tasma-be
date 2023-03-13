@@ -28,7 +28,7 @@ export class User {
   emailVerified: boolean;
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Workspace' }] })
-  workspaces: Workspace;
+  workspaces: Array<Workspace>;
 
   @Prop({ default: Date.now() })
   createdAt?: Date;
