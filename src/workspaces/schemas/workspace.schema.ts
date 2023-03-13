@@ -12,8 +12,8 @@ export class Workspace {
   @Prop()
   description: string;
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }] })
-  tasks: [];
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Issue' }] })
+  issues: [];
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Setting' })
   settings: {};
