@@ -21,5 +21,5 @@ export class CreateUserDto {
   lastName: string;
 
   @IsOptional()
-  gender: string;
+  gender: number;
 }

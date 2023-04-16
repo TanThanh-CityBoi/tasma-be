@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TransformInterceptor } from './middlewares';
 import { AuthModule } from './auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './users/user.module';
-import { config } from './config';
+import { config } from './configs/env.config';
+import { LoggerInterceptor } from './middlewares/logger.interceptor';
 
 @Module({
   imports: [
@@ -24,13 +23,16 @@ import { config } from './config';
       inject: [ConfigService],
     }),
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [
-    AppService,
     ConfigService,
     {
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggerInterceptor,
     },
   ],
 })

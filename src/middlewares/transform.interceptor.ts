@@ -15,26 +15,13 @@ export class TransformInterceptor<T> implements NestInterceptor<T, IResponse> {
     next: CallHandler,
   ): Observable<IResponse> {
     return next.handle().pipe(
-      map((data) => {
-        const response: IResponse = {
-          status: 200,
-          data: null,
-          message: null,
-          errors: null,
+      map((response) => {
+        context.switchToHttp().getResponse().status(response?.statusCode);
+        return <IResponse>{
+          statusCode: response?.statusCode,
+          data: response?.data,
+          message: response?.message,
         };
-        if (!data) {
-          context.switchToHttp().getResponse().status(500);
-          return Object.assign(response, {
-            status: 500,
-            message: 'INTERNAL_SERVER_ERROR',
-          });
-        }
-        if (data?.errors || (data.status && data.message)) {
-          context.switchToHttp().getResponse().status(data.status);
-          return Object.assign(response, data);
-        }
-        context.switchToHttp().getResponse().status(200);
-        return Object.assign(response, { data });
       }),
     );
   }

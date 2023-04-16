@@ -1,22 +1,16 @@
-import { plainToClass } from 'class-transformer';
+import { HttpStatus } from '@nestjs/common';
 import { IResponse } from 'src/interfaces';
 
-function transformData<T>(dto: new (...args: any[]) => T, obj): T {
-  return plainToClass(dto, obj, { excludeExtraneousValues: true });
-}
-
-function response({
-  status = 200,
-  message = 'message reponse',
+function _response({
+  statusCode = HttpStatus.OK,
   data = null,
-  errors = null,
+  message = 'Success',
 }): IResponse {
   return {
-    status,
+    statusCode,
     message,
     data,
-    errors,
   };
 }
 
-export { transformData, response };
+export { _response };

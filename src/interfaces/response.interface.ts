@@ -1,6 +1,5 @@
 export interface IResponse {
-  status: number;
+  statusCode: number;
   data: { [key: string]: any } | null;
   message: string;
-  errors: { [key: string]: any } | null;
 }

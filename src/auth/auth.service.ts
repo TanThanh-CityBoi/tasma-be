@@ -1,13 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UserService } from 'src/users/user.service';
-import { GOOGLE_AUTH_URL, transformData } from 'src/utils';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { LoginRes, SignUpRes } from './dto';
-import { User } from 'src/users/schemas';
 import { isEmpty } from 'lodash';
 import * as bcrypt from 'bcrypt';
 import axios from 'axios';
-import { ConfigService } from '@nestjs/config';
+
+import { User } from '@users/schemas';
+import { GOOGLE_AUTH_URL } from '@utils/constant';
+import { UserService } from '@users/user.service';
+import { CreateUserDto, LoginDto } from './dto';
 
 @Injectable()
 export class AuthService {
@@ -16,9 +17,8 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly config: ConfigService,
   ) {}
-  async login(data: any) {
+  async login(data: LoginDto) {
     const { email, password } = data;
-    if (!email) throw new BadRequestException('Incorrect email or password');
     const user = await this.userService.getUser({ email });
     if (isEmpty(user)) {
       throw new BadRequestException('Incorrect email or password');
@@ -35,13 +35,14 @@ export class AuthService {
         expiresIn: this.config.get('TOKEN_EXPTIME'),
       },
     );
-    return transformData(LoginRes, {
+    delete user?.password;
+    return {
       userInfo: user,
       accessToken,
-    });
+    };
   }
 
-  async signUp(data: any) {
+  async signUp(data: CreateUserDto) {
     const { email, firstName, lastName, gender, password, confirmPassword } =
       data;
     if (password != confirmPassword) {
@@ -61,8 +62,10 @@ export class AuthService {
     newUser.lastName = lastName;
     newUser.password = bcrypt.hashSync(password, 10);
     newUser.gender = gender;
-    const result = await this.userService.createUser(newUser);
-    return transformData(SignUpRes, result);
+
+    const user = await this.userService.createUser(newUser);
+    delete user?.password;
+    return user;
   }
 
   async loginWithGoogle(data: any) {
@@ -85,7 +88,7 @@ export class AuthService {
           expiresIn: this.config.get('TOKEN_EXPTIME'),
         },
       );
-      return transformData(LoginRes, { ...existedUser, accessToken });
+      return { ...existedUser, accessToken };
     }
 
     const newUser = new User();
@@ -100,6 +103,6 @@ export class AuthService {
       },
     );
     const createResult = await this.userService.createUser(newUser);
-    return transformData(LoginRes, { ...createResult, accessToken });
+    return { ...createResult, accessToken };
   }
 }

@@ -1,8 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as chalk from 'chalk';
 import { AllExceptionsFilter } from './middlewares';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
@@ -20,13 +19,11 @@ async function bootstrap() {
     new ValidationPipe({ transform: true, disableErrorMessages: false }),
   );
 
+  const logger = new Logger('HTTP');
   const config = app.get(ConfigService);
   const PORT = config.get('PORT');
   await app.listen(PORT, async () => {
-    console.log(
-      chalk.blueBright(`APPLICATION IS RUNNING ON: `),
-      await app.getUrl(),
-    );
+    logger.verbose(`APPLICATION IS RUNNING ON: ${await app.getUrl()}`);
   });
 }
 bootstrap();
