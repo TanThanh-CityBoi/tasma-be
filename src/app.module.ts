@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './users/user.module';
 import { config } from './configs/env.config';
 import { LoggerInterceptor } from './middlewares/logger.interceptor';
+import { ProjectsModule } from './projects/projects.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { LoggerInterceptor } from './middlewares/logger.interceptor';
       }),
       inject: [ConfigService],
     }),
+    ProjectsModule,
   ],
   controllers: [],
   providers: [
