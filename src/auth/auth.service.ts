@@ -27,6 +27,9 @@ export class AuthService {
     if (isEmpty(user) || !isCorrectPassword) {
       throw new BadRequestException('Incorrect email or password');
     }
+    if (user && !user.activated) {
+      throw new BadRequestException('Your account is not been activated!');
+    }
     //
     const accessToken = this.jwtService.sign(
       { userId: user._id },
@@ -35,10 +38,8 @@ export class AuthService {
         expiresIn: this.config.get('TOKEN_EXPTIME'),
       },
     );
-    delete user?.password;
     return {
-      userInfo: user,
-      accessToken,
+      id_token: accessToken,
     };
   }
 

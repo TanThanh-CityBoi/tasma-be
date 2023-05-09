@@ -8,6 +8,10 @@ import { UserModule } from './users/user.module';
 import { config } from './configs/env.config';
 import { LoggerInterceptor } from './middlewares/logger.interceptor';
 import { ProjectsModule } from './projects/projects.module';
+import { TasksModule } from './tasks/tasks.module';
+import { CommentModule } from './comment/comment.module';
+import { CategoriesModule } from './categories/categories.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -24,6 +28,10 @@ import { ProjectsModule } from './projects/projects.module';
       inject: [ConfigService],
     }),
     ProjectsModule,
+    TasksModule,
+    CommentModule,
+    CategoriesModule,
+    CommentsModule,
   ],
   controllers: [],
   providers: [

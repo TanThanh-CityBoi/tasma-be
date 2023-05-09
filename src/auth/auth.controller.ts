@@ -1,5 +1,4 @@
 import { Body, Controller, Post } from '@nestjs/common';
-
 import { _response } from '@utils/function';
 import { AuthService } from './auth.service';
 import { CreateUserDto, GoogleLoginDto, LoginDto } from './dto';
@@ -14,7 +13,7 @@ export class AuthController {
     return _response({ data: result, message: 'Loggin successfully' });
   }
 
-  @Post('sign-up')
+  @Post('register')
   public async signUp(@Body() body: CreateUserDto) {
     const result = await this.authService.signUp(body);
     return _response({ data: result, message: 'Register successfully' });
