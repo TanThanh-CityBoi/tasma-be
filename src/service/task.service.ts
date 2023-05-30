@@ -48,9 +48,7 @@ export class TaskService {
 
         const {id} = await this.taskRepository.save(taskUpdate);
 
-        const taskUpdated = await this.findById(id);
-
-        return TaskMapper.fromEntityToDTO(taskUpdated);
+        return await this.findById(id);
     }
 
 }

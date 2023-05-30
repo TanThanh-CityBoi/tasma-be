@@ -3,6 +3,7 @@ import { ProjectCategoryDTO } from './project-category.dto';
 import { BaseDTO } from './base.dto';
 import { UserDTO } from './user.dto';
 import { TaskDTO } from './task.dto';
+import { WorkspaceDTO } from './workpsace.dto'
 
 /**
  * An Project DTO object.
@@ -27,6 +28,9 @@ export class ProjectDTO extends BaseDTO {
         description: 'List members', required: false
     })
     members?: UserDTO[];
+
+    @ApiModelProperty({ type: WorkspaceDTO, description: 'workspace', required: false })
+    workspace?: WorkspaceDTO;
 
     @ApiModelProperty({
         isArray: true,

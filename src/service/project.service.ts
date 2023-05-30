@@ -89,9 +89,8 @@ export class ProjectService {
 
     async delete(id: number): Promise<ProjectDTO | undefined> {
         let projectToDelete = await this.findById(id);
-        const projectDeleted = await this.projectRepository.remove(projectToDelete);
 
-        return ProjectMapper.fromEntityToDTO(projectDeleted);
+        return await this.projectRepository.remove(ProjectMapper.fromDTOtoEntity(projectToDelete));
     }
 
     async listMembers(projectId: number): Promise<UserDTO[] | undefined> {

@@ -51,7 +51,8 @@ export class CommentService {
     }
 
     async delete(id: number): Promise<CommentDTO | undefined> {
-        let commentToDelete = await this.findById(id);
+        let comment= await this.findById(id);
+        const commentToDelete = CommentMapper.fromDTOtoEntity(comment);
         const commentDeleted = await this.commentRepository.remove(commentToDelete);
 
         return CommentMapper.fromEntityToDTO(commentDeleted);
