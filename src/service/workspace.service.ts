@@ -11,20 +11,13 @@ import { UserMapper } from './mapper/user.mapper';
 export class WorkspaceService {
     constructor(@InjectRepository(WorkspaceRepository) private workspaceRepository: WorkspaceRepository) { }
 
-    // async save(projectDTO: ProjectDTO): Promise<any | undefined> {
-    //     const newPoject = ProjectMapper.fromDTOtoEntity(projectDTO);
-    //     let projectFind: ProjectDTO = await this.findByName(newPoject.name);
-    //     if (projectFind) {
-    //         return {
-    //             status: HttpStatus.BAD_REQUEST,
-    //             message: 'Project name already exist!',
-    //         }
-    //     }
+    async save(projectDTO: ProjectDTO): Promise<any | undefined> {
+        const newPoject = ProjectMapper.fromDTOtoEntity(projectDTO);
 
-    //     const projectCreated = await this.projectRepository.save(newPoject);
+        const projectCreated = await this.workspaceRepository.save(newPoject);
 
-    //     return ProjectMapper.fromEntityToDTO(projectCreated);
-    // }
+        return ProjectMapper.fromEntityToDTO(projectCreated);
+    }
 
     // async findAll(): Promise<ProjectDTO[] | undefined> {
     //     const result = await this.projectRepository.find({ relations: ['projectCategory', 'members'] });

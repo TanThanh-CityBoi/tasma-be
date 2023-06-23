@@ -18,6 +18,7 @@ import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/sw
 import { ProjectDTO } from '../../service/dto/project.dto';
 import { WorkspaceService } from '../../service/workspace.service';
 import { UserDTO } from '../../service/dto/user.dto';
+import { WorkspaceDTO } from 'src/service/dto/workpsace.dto';
 
 
 @Controller('api/workspace')
@@ -30,19 +31,19 @@ export class WorkspaceController {
 
     constructor(private readonly workspaceService: WorkspaceService) { }
 
-    // @Post('/create-project')
+    // @Post('/create-workspace')
     // @Roles(RoleType.USER)
-    // @ApiOperation({ title: 'Create project' })
+    // @ApiOperation({ title: 'Create workspace' })
     // @ApiResponse({
     //     status: 201,
     //     description: 'The record has been successfully created.',
     //     type: ProjectDTO,
     // })
     // @ApiResponse({ status: 403, description: 'Forbidden.' })
-    // async createProject(@Body() projectDTO: ProjectDTO): Promise<ProjectDTO> {
-    //     const projectCreated = await this.projectService.save(projectDTO);
+    // async createProject(@Body() workspaceDTO: WorkspaceDTO): Promise<ProjectDTO> {
+    //     const spaceCreated = await this.workspaceService.save(workspaceDTO);
 
-    //     return projectCreated;
+    //     return spaceCreated;
     // }
 
     // @Get('/get-all')

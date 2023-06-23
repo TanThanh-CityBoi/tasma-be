@@ -12,6 +12,13 @@ export class WorkspaceDTO extends BaseDTO {
     @ApiModelProperty({ example: 'MyProject', description: 'Project name', required: true })
     name: string;
 
+    // @ApiModelProperty({
+    //     isArray: true,
+    //     type: UserDTO,
+    //     description: 'List members', required: false
+    // })
+    // host?: UserDTO[];
+
     @ApiModelProperty({
         isArray: true,
         type: UserDTO,

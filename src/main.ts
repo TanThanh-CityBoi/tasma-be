@@ -11,8 +11,8 @@ const port = process.env.NODE_SERVER_PORT || config.get('server.port');
 const useJHipsterRegistry = config.get('eureka.client.enabled');
 
 async function bootstrap(): Promise<void> {
-    loadCloudConfig();
-    registerAsEurekaService();
+    // loadCloudConfig();
+    // registerAsEurekaService();
 
     const appOptions = { cors: true };
     const app = await NestFactory.create(AppModule, appOptions);
