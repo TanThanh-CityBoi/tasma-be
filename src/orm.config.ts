@@ -20,13 +20,13 @@ function ormConfig(): TypeOrmModuleOptions {
         // username: process.env.DATABASE_USERNAME,
         // password: process.env.DATABASE_PASSWORD,
 
-        // database: 'reactjs_jira_bugs_clone',
+        // database: 'tasma',
         // host: '103.142.26.103',
         // port: 3306,
         // username: 'monty29',
         // password: '123456789',
 
-        database: 'reactjs_jira_bugs_clone',
+        database: 'tasma',
         host: 'localhost',
         port: 3306,
         username: 'root',
@@ -45,7 +45,7 @@ function ormConfig(): TypeOrmModuleOptions {
             name: 'default',
             type: 'mysql',
 
-            database: 'reactjs_jira_bugs_clone',
+            database: 'tasma',
             host: 'localhost',
             port: 3306,
             username: 'root',
@@ -65,7 +65,7 @@ function ormConfig(): TypeOrmModuleOptions {
             name: 'default',
             type: 'mysql',
 
-            database: 'reactjs_jira_bugs_clone',
+            database: 'tasma',
             host: 'localhost',
             port: 3306,
             username: 'root',
