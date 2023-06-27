@@ -75,6 +75,7 @@ export class AuthService {
     }
 
     async registerNewUser(newUser: UserDTO): Promise<any | undefined> {
+        console.log("🚀 ~ file: auth.service.ts:78 ~ AuthService ~ registerNewUser ~ newUser:", newUser)
         let userFind: UserDTO = await this.userService.findByFields({ where: { login: newUser.login } });
         if (userFind) {
             return {

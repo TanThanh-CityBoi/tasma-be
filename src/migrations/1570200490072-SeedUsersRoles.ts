@@ -9,11 +9,11 @@ export class SeedUsersRoles1570200490072 implements MigrationInterface {
     role2: Authority = { name: 'ROLE_USER' };
 
     user1: User = {
-        login: 'system',
-        password: 'system',
-        firstName: 'System',
-        lastName: 'System',
-        email: 'system@localhost.it',
+        login: 'tasma@gmail.com',
+        password: '111111',
+        firstName: 'Tasma',
+        lastName: 'Admin',
+        email: 'tasma@gmail.com',
         imageUrl: '',
         activated: true,
         langKey: 'en',
@@ -22,11 +22,11 @@ export class SeedUsersRoles1570200490072 implements MigrationInterface {
     };
 
     user2: User = {
-        login: 'anonymoususer',
-        password: 'anonymoususer',
+        login: 'user@gmail.com',
+        password: '111111',
         firstName: 'Anonymous',
         lastName: 'User',
-        email: 'anonymoususer@localhost.it',
+        email: 'user@gmail.com',
         imageUrl: '',
         activated: true,
         langKey: 'en',
@@ -35,11 +35,11 @@ export class SeedUsersRoles1570200490072 implements MigrationInterface {
     };
 
     user3: User = {
-        login: 'admin',
-        password: 'admin',
-        firstName: 'Administrator',
-        lastName: 'Administrator',
-        email: 'admin@localhost.it',
+        login: 'tanthanh@gmail.com',
+        password: '111111',
+        firstName: 'Thanh',
+        lastName: 'Tan',
+        email: 'tanthanh@gmail.com',
         imageUrl: '',
         activated: true,
         langKey: 'en',
@@ -47,20 +47,7 @@ export class SeedUsersRoles1570200490072 implements MigrationInterface {
         lastModifiedBy: 'system',
     };
 
-    user4: User = {
-        login: 'user',
-        password: 'user',
-        firstName: 'User',
-        lastName: 'User',
-        email: 'user@localhost.it',
-        imageUrl: '',
-        activated: true,
-        langKey: 'en',
-        createdBy: 'system',
-        lastModifiedBy: 'system',
-    };
-
-    // eslint-disable-next-line
+    // eslint-disable-next-lines
   public async up(queryRunner: QueryRunner): Promise<any> {
         const authorityRepository = getRepository('authority');
 
@@ -71,11 +58,10 @@ export class SeedUsersRoles1570200490072 implements MigrationInterface {
 
         this.user1.authorities = [adminRole, userRole];
         this.user3.authorities = [adminRole, userRole];
-        this.user4.authorities = [userRole];
 
-        await Promise.all([this.user1, this.user2, this.user3, this.user4].map(u => transformPassword(u)));
+        await Promise.all([this.user1, this.user2, this.user3].map(u => transformPassword(u)));
 
-        await userRepository.save([this.user1, this.user2, this.user3, this.user4]);
+        await userRepository.save([this.user1, this.user2, this.user3]);
     }
 
     // eslint-disable-next-line
