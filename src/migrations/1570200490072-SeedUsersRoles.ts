@@ -21,49 +21,24 @@ export class SeedUsersRoles1570200490072 implements MigrationInterface {
         lastModifiedBy: 'system',
     };
 
-    user2: User = {
-        login: 'user@gmail.com',
-        password: '111111',
-        firstName: 'Anonymous',
-        lastName: 'User',
-        email: 'user@gmail.com',
-        imageUrl: '',
-        activated: true,
-        langKey: 'en',
-        createdBy: 'system',
-        lastModifiedBy: 'system',
-    };
-
-    user3: User = {
-        login: 'tanthanh@gmail.com',
-        password: '111111',
-        firstName: 'Thanh',
-        lastName: 'Tan',
-        email: 'tanthanh@gmail.com',
-        imageUrl: '',
-        activated: true,
-        langKey: 'en',
-        createdBy: 'system',
-        lastModifiedBy: 'system',
-    };
-
     // eslint-disable-next-lines
-  public async up(queryRunner: QueryRunner): Promise<any> {
+    public async up(queryRunner: QueryRunner): Promise<any> {
+        // user role
         const authorityRepository = getRepository('authority');
 
         const adminRole = await authorityRepository.save(this.role1);
         const userRole = await authorityRepository.save(this.role2);
 
+        // user info
         const userRepository = getRepository('user');
 
         this.user1.authorities = [adminRole, userRole];
-        this.user3.authorities = [adminRole, userRole];
 
-        await Promise.all([this.user1, this.user2, this.user3].map(u => transformPassword(u)));
+        await Promise.all([this.user1].map(u => transformPassword(u)));
 
-        await userRepository.save([this.user1, this.user2, this.user3]);
+        await userRepository.save([this.user1]);
     }
 
     // eslint-disable-next-line
-  public async down(queryRunner: QueryRunner): Promise<any> {}
+    public async down(queryRunner: QueryRunner): Promise<any> {}
 }

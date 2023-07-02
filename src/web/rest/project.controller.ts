@@ -28,7 +28,7 @@ import { UserDTO } from '../../service/dto/user.dto';
 export class ProjectController {
     logger = new Logger('ProjectController');
 
-    constructor(private readonly projectService: ProjectService) { }
+    constructor(private readonly projectService: ProjectService) {}
 
     @Post('/create-project')
     @Roles(RoleType.USER)
@@ -39,7 +39,9 @@ export class ProjectController {
         type: ProjectDTO,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async createProject(@Body() projectDTO: ProjectDTO): Promise<ProjectDTO> {
+    async createProject(@Body() projectDTO: ProjectDTO, @Req() req: Request): Promise<ProjectDTO> {
+        const user: any = req.user;
+        projectDTO.createdBy = user.firstName || 'Anonymous';
         const projectCreated = await this.projectService.save(projectDTO);
 
         return projectCreated;
@@ -73,7 +75,6 @@ export class ProjectController {
         return projects;
     }
 
-
     @Get('/get-project-detail')
     @Roles(RoleType.USER)
     @ApiOperation({ title: 'Get project detail by id' })
@@ -86,7 +87,7 @@ export class ProjectController {
         const id = req.query.id;
         const project = await this.projectService.findById(id);
 
-        return project
+        return project;
     }
 
     @Put('/update')
@@ -158,5 +159,4 @@ export class ProjectController {
         const projectId = req.query.projectId;
         return await this.projectService.listMembers(projectId);
     }
-
 }

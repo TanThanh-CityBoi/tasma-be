@@ -37,12 +37,12 @@ export class AuthService {
         const payload: Payload = { id: user.id, username: user.login, authorities: user.authorities };
 
         /* eslint-disable */
-    return {
-      id_token: this.jwtService.sign(payload),
-    };
-  }
+        return {
+            id_token: this.jwtService.sign(payload),
+        };
+    }
 
-  /* eslint-enable */
+    /* eslint-enable */
     async validateUser(payload: Payload): Promise<UserDTO | undefined> {
         return await this.findUserWithAuthById(payload.id);
     }
@@ -75,20 +75,19 @@ export class AuthService {
     }
 
     async registerNewUser(newUser: UserDTO): Promise<any | undefined> {
-        console.log("🚀 ~ file: auth.service.ts:78 ~ AuthService ~ registerNewUser ~ newUser:", newUser)
         let userFind: UserDTO = await this.userService.findByFields({ where: { login: newUser.login } });
         if (userFind) {
             return {
                 status: HttpStatus.BAD_REQUEST,
                 message: 'Username already exists!',
-            }
+            };
         }
         userFind = await this.userService.findByFields({ where: { email: newUser.email } });
         if (userFind) {
             throw new HttpException('Email is already in use!', HttpStatus.BAD_REQUEST);
         }
         newUser.authorities = ['ROLE_USER'];
-        const user: UserDTO = await this.userService.save({...newUser, activated: true}, newUser.login, true);
+        const user: UserDTO = await this.userService.save({ ...newUser, activated: true }, newUser.login, true);
         return user;
     }
 

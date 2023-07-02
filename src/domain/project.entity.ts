@@ -9,19 +9,25 @@ export class Project extends BaseEntity {
     @Column({ unique: true })
     name: string;
 
-    @Column("longtext")
+    @Column('longtext')
     url?: string;
 
-    @Column("longtext")
+    @Column('longtext')
     description?: string;
 
-    @ManyToOne(() => ProjectCategory, projectCategory => projectCategory.projects)
+    @ManyToOne(
+        () => ProjectCategory,
+        projectCategory => projectCategory.projects,
+    )
     projectCategory: ProjectCategory;
 
     @ManyToMany(() => User)
-    @JoinTable({name: 'project_members'})
+    @JoinTable({ name: 'project_members' })
     members?: User[];
 
-    @OneToMany(() => Task, task => task.project)
+    @OneToMany(
+        () => Task,
+        task => task.project,
+    )
     tasks?: Task[];
 }

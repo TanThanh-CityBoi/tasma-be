@@ -14,23 +14,11 @@ function ormConfig(): TypeOrmModuleOptions {
     let ormconfig: TypeOrmModuleOptions = {
         name: 'default',
         type: 'mysql',
-        // database: process.env.DATABASE_NAME,
-        // host: process.env.DATABASE_HOST,
-        // port: 3306,
-        // username: process.env.DATABASE_USERNAME,
-        // password: process.env.DATABASE_PASSWORD,
-
-        // database: 'tasma',
-        // host: '103.142.26.103',
-        // port: 3306,
-        // username: 'monty29',
-        // password: '123456789',
-
-        database: 'tasma',
-        host: 'localhost',
-        port: 3306,
-        username: 'root',
-        password: '123456789',
+        database: process.env.DATABASE_NAME,
+        host: process.env.DATABASE_HOST,
+        port: Number(process.env.DATABASE_PORT) || 3306,
+        username: process.env.DATABASE_USERNAME,
+        password: process.env.DATABASE_PASSWORD,
 
         logging: false,
         synchronize: true,
@@ -53,26 +41,6 @@ function ormConfig(): TypeOrmModuleOptions {
 
             logging: false,
             synchronize: commonConf.SYNCRONIZE,
-            entities: commonConf.ENTITIES,
-            migrations: commonConf.MIGRATIONS,
-            cli: commonConf.CLI,
-            migrationsRun: commonConf.MIGRATIONS_RUN,
-        };
-    }
-
-    if (process.env.BACKEND_ENV === 'test') {
-        ormconfig = {
-            name: 'default',
-            type: 'mysql',
-
-            database: 'tasma',
-            host: 'localhost',
-            port: 3306,
-            username: 'root',
-            password: '123456789',
-
-            logging: false,
-            synchronize: true,
             entities: commonConf.ENTITIES,
             migrations: commonConf.MIGRATIONS,
             cli: commonConf.CLI,
