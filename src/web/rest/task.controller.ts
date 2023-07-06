@@ -20,7 +20,7 @@ import { CommentService } from '../../service/comment.service';
 import { NotificationService } from '../../service/notification.service';
 
 @Controller('api/task')
-// @UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor, ClassSerializerInterceptor)
 @ApiBearerAuth()
 @ApiUseTags('task-resource')
@@ -42,7 +42,10 @@ export class TaskController {
         type: TaskDTO,
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    async createTask(@Body() taskDTO: TaskDTO): Promise<TaskDTO | undefined> {
+    async createTask(@Body() taskDTO: TaskDTO, @Req() req: Request): Promise<TaskDTO | undefined> {
+        const user: any = req.user;
+        taskDTO.createdBy = user.firstName || 'Anonymous';
+
         const taskCreated = await this.taskService.save(taskDTO);
 
         return taskCreated;

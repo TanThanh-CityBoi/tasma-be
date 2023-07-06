@@ -9,7 +9,6 @@ import { CommentDTO } from './comment.dto';
  * An Task DTO object.
  */
 export class TaskDTO extends BaseDTO {
-
     @ApiModelProperty({ example: 'MyTaskTitle', description: 'Task title', required: false })
     title?: string;
 
@@ -25,7 +24,8 @@ export class TaskDTO extends BaseDTO {
     @ApiModelProperty({
         isArray: true,
         type: UserDTO,
-        description: 'List users assign', required: false
+        description: 'List users assign',
+        required: false,
     })
     usersAssign?: UserDTO[];
 
@@ -34,7 +34,7 @@ export class TaskDTO extends BaseDTO {
 
     @ApiModelProperty({ example: 2, description: 'Time tracking spent', required: false })
     timeTrackingSpent?: number;
-    
+
     @ApiModelProperty({ example: 10, description: 'Time tracking remaining', required: false })
     timeTrackingRemaining?: number;
 
@@ -47,10 +47,14 @@ export class TaskDTO extends BaseDTO {
     @ApiModelProperty({ example: 5, description: 'Original Estimate', required: false })
     originalEstimate?: number;
 
+    @ApiModelProperty({ example: '', description: 'Due Date', required: false })
+    dueDate?: Date;
+
     @ApiModelProperty({
         isArray: true,
         type: CommentDTO,
-        description: 'List comment of task', required: false
+        description: 'List comment of task',
+        required: false,
     })
     comments?: CommentDTO[];
 }
