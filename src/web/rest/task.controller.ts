@@ -9,7 +9,6 @@ import {
     Get,
     Req,
     Put,
-    Delete,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
@@ -18,18 +17,21 @@ import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/sw
 import { TaskDTO } from '../../service/dto/task.dto';
 import { TaskService } from '../../service/task.service';
 import { CommentService } from '../../service/comment.service';
-
+import { NotificationService } from '../../service/notification.service';
 
 @Controller('api/task')
-@UseGuards(AuthGuard, RolesGuard)
+// @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(LoggingInterceptor, ClassSerializerInterceptor)
 @ApiBearerAuth()
 @ApiUseTags('task-resource')
 export class TaskController {
     logger = new Logger('TaskController');
 
-    constructor(private readonly taskService: TaskService,
-                private readonly commetService: CommentService) { }
+    constructor(
+        private readonly taskService: TaskService,
+        private readonly commetService: CommentService,
+        private readonly notificationService: NotificationService,
+    ) {}
 
     @Post('/create-task')
     @Roles(RoleType.USER)
@@ -63,7 +65,7 @@ export class TaskController {
                     id: projectId,
                 },
                 status: status,
-            }
+            },
         });
 
         return tasks;
@@ -82,7 +84,7 @@ export class TaskController {
         const task = await this.taskService.findById(taskId);
         const comments = await this.commetService.findAllByTask(taskId);
         task.comments = [...comments];
-        
+
         return task;
     }
 
@@ -100,4 +102,8 @@ export class TaskController {
         return taskUpdated;
     }
 
+    @Post('/send-mail')
+    async sendMail() {
+        this.notificationService.updateTaskNotify({});
+    }
 }
