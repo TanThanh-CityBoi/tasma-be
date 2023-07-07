@@ -15,22 +15,28 @@ export class ProjectService {
         const newPoject = ProjectMapper.fromDTOtoEntity(projectDTO);
         let projectFind: ProjectDTO = await this.findByName(newPoject.name);
         if (projectFind) {
-            return {
-                status: HttpStatus.BAD_REQUEST,
-                message: 'Project name already exist!',
-            }
-        }
-
+                             return {
+                                 status: HttpStatus.BAD_REQUEST,
+                                 message: 'Project name already exist!',
+                             };
+                         }
         const projectCreated = await this.projectRepository.save(newPoject);
 
         return ProjectMapper.fromEntityToDTO(projectCreated);
     }
 
-    async findAll(): Promise<ProjectDTO[] | undefined> {
-        const result = await this.projectRepository.find({ relations: ['projectCategory', 'members'] });
+    async findAll(userId: any): Promise<ProjectDTO[] | undefined> {
+        const result = await this.projectRepository.find({ relations: ['projectCategory', 'members', 'tasks'] });
         const projectsDTO: ProjectDTO[] = [];
 
-        result.forEach((project) => projectsDTO.push(ProjectMapper.fromEntityToDTO(project)));
+        const resultFiltered = result.filter(project => {
+            const memberIds = project.members.map(mem => {
+                return mem?.id;
+            });
+            if(memberIds.includes(userId)) return true;
+            return false;
+        });
+        resultFiltered.forEach((project) => projectsDTO.push(ProjectMapper.fromEntityToDTO(project)));
 
         return projectsDTO;
     }
@@ -46,7 +52,7 @@ export class ProjectService {
 
     async findById(id: number): Promise<ProjectDTO | undefined> {
         const result = await this.projectRepository.findOne({
-            relations: ['projectCategory', 'members'],
+            relations: ['projectCategory', 'members', 'tasks'],
             where: {
                 id: id,
             }

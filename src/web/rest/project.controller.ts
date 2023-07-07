@@ -18,7 +18,7 @@ import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/sw
 import { ProjectDTO } from '../../service/dto/project.dto';
 import { ProjectService } from '../../service/project.service';
 import { UserDTO } from '../../service/dto/user.dto';
-
+import { UserMapper } from 'src/service/mapper/user.mapper';
 
 @Controller('api/project')
 @UseGuards(AuthGuard, RolesGuard)
@@ -41,7 +41,8 @@ export class ProjectController {
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     async createProject(@Body() projectDTO: ProjectDTO, @Req() req: Request): Promise<ProjectDTO> {
         const user: any = req.user;
-        projectDTO.createdBy = user.firstName || 'Anonymous';
+        projectDTO.createdBy = user.login || 'Anonymous';
+        projectDTO.members = [user];
         const projectCreated = await this.projectService.save(projectDTO);
 
         return projectCreated;
@@ -55,8 +56,9 @@ export class ProjectController {
         description: 'List all project',
         type: ProjectDTO,
     })
-    async getAllProject(): Promise<ProjectDTO[]> {
-        const projects = await this.projectService.findAll();
+    async getAllProject(@Req() req: Request): Promise<ProjectDTO[]> {
+        const user: any = req.user;
+        const projects = await this.projectService.findAll(user?.id);
 
         return projects;
     }
@@ -100,7 +102,6 @@ export class ProjectController {
     })
     async updateProject(@Body() projectDTO: ProjectDTO): Promise<ProjectDTO | undefined> {
         const projectUpdated = await this.projectService.update(projectDTO);
-
         return projectUpdated;
     }
 
@@ -114,7 +115,6 @@ export class ProjectController {
     })
     async addMember(@Body() projectDTO: ProjectDTO): Promise<ProjectDTO | undefined> {
         const projectUpdated = await this.projectService.update(projectDTO);
-
         return projectUpdated;
     }
 
