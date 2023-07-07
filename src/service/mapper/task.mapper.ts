@@ -22,9 +22,9 @@ export class TaskMapper {
             return;
         }
         const taskDTO = new TaskDTO();
-
+        
         const fields = Object.getOwnPropertyNames(task);
-
+        
         fields.forEach(field => {
             taskDTO[field] = task[field];
         });

@@ -34,10 +34,10 @@ export class TaskService {
 
     async findById(id: number): Promise<TaskDTO | undefined> {
         const result = await this.taskRepository.findOne({
-            relations: ['project', 'usersAssign'],
+            relations: ['project', 'usersAssign', 'reporter'],
             where: {
                 id: id,
-            }
+            },
         });
 
         return TaskMapper.fromEntityToDTO(result);

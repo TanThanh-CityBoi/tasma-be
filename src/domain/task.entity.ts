@@ -26,6 +26,10 @@ export class Task extends BaseEntity {
     @JoinTable({ name: 'users_assign' })
     usersAssign?: User[];
 
+    @ManyToOne(() => User)
+    @JoinTable({ name: 'reporter' })
+    reporter?: User;
+
     @Column({ default: 'BACKLOG' })
     status?: string;
 

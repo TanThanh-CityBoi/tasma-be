@@ -43,6 +43,7 @@ export class TaskController {
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     async createTask(@Body() taskDTO: TaskDTO, @Req() req: Request): Promise<TaskDTO | undefined> {
+        console.log('🚀 ~ file: task.controller.ts:46 ~ TaskController ~ createTask ~ taskDTO:', taskDTO);
         const user: any = req.user;
         taskDTO.createdBy = user.firstName || 'Anonymous';
 
@@ -62,7 +63,7 @@ export class TaskController {
     async getAllTasksByProject(@Req() req: Request): Promise<TaskDTO[]> {
         let { projectId, status } = req.query;
         const tasks = await this.taskService.findAll({
-            relations: ['usersAssign'],
+            relations: ['usersAssign', 'reporter'],
             where: {
                 project: {
                     id: projectId,
