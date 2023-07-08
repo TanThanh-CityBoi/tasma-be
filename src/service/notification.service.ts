@@ -42,14 +42,17 @@ export class NotificationService {
     }
 
     updateTaskNotify(data: any) {
+        console.log("🚀 ~ file: notification.service.ts:45 ~ NotificationService ~ updateTaskNotify ~ data:", data)
         const updateTempalte = path.join(__dirname, '..', 'mail-template/updateTask.hbs');
         this.sendMail({
             targetEmail: 'tanthanhe@gmail.com',
             sourceTemplate: updateTempalte,
             subject: 'Tasma: Task updated',
             body: {
-                name: 'task number 1',
-                updatedBy: 'tanthanh-cityboi',
+                taskName: data?.taskName,
+                reqUser: data?.reqUser,
+                url: this.FE_URL + `/${data.projectId || 1}`,
+                updateInfo: data?.updateInfo,
             },
         });
     }
@@ -60,6 +63,20 @@ export class NotificationService {
             targetEmail: 'tanthanhe@gmail.com',
             sourceTemplate: template,
             subject: 'TASMA NOTIFICATION: ASSIGN TASK',
+            body: {
+                taskName: data.taskName,
+                reqUser: data.reqUser,
+                url: this.FE_URL + `/${data.projectId || 1}`,
+            },
+        });
+    }
+
+    reporterTask(data) {
+        const template = path.join(__dirname, '..', 'mail-template/reporterTask.hbs');
+        this.sendMail({
+            targetEmail: 'tanthanhe@gmail.com',
+            sourceTemplate: template,
+            subject: 'TASMA NOTIFICATION: REPORTER TASK',
             body: {
                 taskName: data.taskName,
                 reqUser: data.reqUser,

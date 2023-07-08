@@ -63,6 +63,14 @@ export class TaskController {
             }
         });
 
+        if (taskCreated?.reporter) {
+            this.notificationService.reporterTask({
+                taskName: taskCreated?.name,
+                reqUser: user?.login,
+                projectId: taskCreated?.project?.id,
+            });
+        }
+
         return taskCreated;
     }
 
@@ -124,8 +132,54 @@ export class TaskController {
         description: 'The record has been successfully updated.',
         type: TaskDTO,
     })
-    async updateProject(@Body() taskDTO: TaskDTO): Promise<TaskDTO | undefined> {
+    async updateProject(@Body() taskDTO: TaskDTO, @Req() req: Request): Promise<TaskDTO | undefined> {
+        const reqUser: any = req?.user;
+        const taskPre = await this.taskService.findOne({ where: { id: taskDTO?.id } });
+        const listUpdate = [];
+        let stringUpdate = '';
+        const fieldCompares = [
+            'title',
+            'name',
+            'description',
+            'status',
+            'timeTrackingSpent',
+            'timeTrackingRemaining',
+            'priority',
+            'originalEstimate',
+            'dueDate',
+        ];
+        fieldCompares.map(key => {
+            console.log(`${key}: ${taskPre[key]}`);
+            console.log(`${key}: ${taskDTO[key]}`);
+            if (key == 'dueDate') {
+                const preDate = new Date(taskPre[key]);
+                const dateAfter = new Date(taskDTO[key]);
+                if (preDate.getTime() != dateAfter.getTime()) {
+                    listUpdate.push({ key, from: taskPre[key], to: taskDTO[key] });
+                    stringUpdate += ` <div>${key}: ${taskPre[key]}  -->  ${taskDTO[key]}<div>`;
+                }
+            } else if (String(taskPre[key]) !== String(taskDTO[key])) {
+                listUpdate.push({ key, from: taskPre[key], to: taskDTO[key] });
+                stringUpdate += `   <div style="display: flex; align-items: center; margin-top: 50px"> 
+                                        <div><b>${key.toUpperCase()} : </b></div> 
+
+                                        <div style="display: flex; align-items: center; justify-content: space-between; width: 500px; margin-left: 50px;">
+                                            <div style="text-decoration: line-through;"> ${taskPre[key]}</div> 
+                                            <div style="display: flex; align-items: center; margin-left: 30px; margin-right: 30px"> <b style="font-size: 20px;"> &#129146; </b> </div>   
+                                            <div>${taskDTO[key]}</div>
+                                        </div>
+                                      
+                                    </div>`;
+            }
+        });
         const taskUpdated = await this.taskService.update(taskDTO);
+
+        this.notificationService.updateTaskNotify({
+            taskName: taskDTO?.name,
+            reqUser: reqUser?.login,
+            projectId: taskDTO?.project?.id,
+            updateInfo: stringUpdate,
+        });
 
         return taskUpdated;
     }
