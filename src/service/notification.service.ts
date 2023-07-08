@@ -7,6 +7,8 @@ import fs from 'fs';
 
 @Injectable()
 export class NotificationService {
+    FE_URL = process.env.FE_URL || 'http://localhost:3000/project/board';
+
     sendMail(data: any) {
         const transporter = nodemailer.createTransport({
             host: process.env.HOST || 'smtp.gmail.com',
@@ -48,6 +50,20 @@ export class NotificationService {
             body: {
                 name: 'task number 1',
                 updatedBy: 'tanthanh-cityboi',
+            },
+        });
+    }
+
+    assignedTask(data) {
+        const template = path.join(__dirname, '..', 'mail-template/assignTask.hbs');
+        this.sendMail({
+            targetEmail: 'tanthanhe@gmail.com',
+            sourceTemplate: template,
+            subject: 'TASMA NOTIFICATION: ASSIGN TASK',
+            body: {
+                taskName: data.taskName,
+                reqUser: data.reqUser,
+                url: this.FE_URL + `/${data.projectId || 1}`,
             },
         });
     }

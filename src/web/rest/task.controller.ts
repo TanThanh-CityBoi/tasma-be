@@ -18,6 +18,7 @@ import { TaskDTO } from '../../service/dto/task.dto';
 import { TaskService } from '../../service/task.service';
 import { CommentService } from '../../service/comment.service';
 import { NotificationService } from '../../service/notification.service';
+import { UserService } from '../../service/user.service';
 
 @Controller('api/task')
 @UseGuards(AuthGuard, RolesGuard)
@@ -31,6 +32,7 @@ export class TaskController {
         private readonly taskService: TaskService,
         private readonly commetService: CommentService,
         private readonly notificationService: NotificationService,
+        private readonly userService: UserService,
     ) {}
 
     @Post('/create-task')
@@ -43,11 +45,21 @@ export class TaskController {
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     async createTask(@Body() taskDTO: TaskDTO, @Req() req: Request): Promise<TaskDTO | undefined> {
-        console.log('🚀 ~ file: task.controller.ts:46 ~ TaskController ~ createTask ~ taskDTO:', taskDTO);
         const user: any = req.user;
         taskDTO.createdBy = user.firstName || 'Anonymous';
 
         const taskCreated = await this.taskService.save(taskDTO);
+        const usersAssign = taskCreated?.usersAssign || [];
+        usersAssign.forEach(async (item, _id) => {
+            const user = await this.userService.findByFields({ where: { id: item?.id } });
+            if (user) {
+                this.notificationService.assignedTask({
+                    taskName: taskCreated?.name,
+                    reqUser: user?.login,
+                    projectId: taskCreated?.project?.id,
+                });
+            }
+        });
 
         return taskCreated;
     }
