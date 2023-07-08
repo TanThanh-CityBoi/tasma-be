@@ -10,6 +10,7 @@ import {
     Req,
     Put,
     Delete,
+    HttpException,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
@@ -87,9 +88,11 @@ export class ProjectController {
     })
     async getProjectDetail(@Req() req: Request): Promise<ProjectDTO | undefined> {
         const id = req.query.id;
+        const user: any = req?.user;
         const project = await this.projectService.findById(id);
-
-        return project;
+        const isMember = project?.members?.find(member => member?.id === user?.id);
+        if (isMember) return project;
+        return null;
     }
 
     @Put('/update')
@@ -157,6 +160,10 @@ export class ProjectController {
     })
     async searchUserByProject(@Req() req: Request): Promise<UserDTO[] | undefined> {
         const projectId = req.query.projectId;
-        return await this.projectService.listMembers(projectId);
+        const members = await this.projectService.listMembers(projectId);
+        const reqUser: any = req?.user;
+        const isMember = members?.find(member => member?.id === reqUser?.id);
+        if (isMember) return members;
+        return [];
     }
 }

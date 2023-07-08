@@ -6,12 +6,13 @@ import { TaskController } from '../web/rest/task.controller';
 import { TaskService } from '../service/task.service';
 import { CommentModule } from './comment.module';
 import { NotificationService } from '../service/notification.service';
-import { UserService } from '../service/user.service';
-import { UserRepository } from '../repository/user.repository';
 import { UserModule } from './user.module';
+import { ProjectModule } from './project.module';
+import { ProjectService } from '../service/project.service';
+import { ProjectRepository } from '../repository/project.repository';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([TaskRepository]), CommentModule, UserModule],
+    imports: [TypeOrmModule.forFeature([TaskRepository]), CommentModule, UserModule, ProjectModule],
     controllers: [TaskController, ManagementController],
     providers: [TaskService, NotificationService],
     exports: [TaskService],

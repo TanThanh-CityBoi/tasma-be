@@ -19,6 +19,7 @@ import { TaskService } from '../../service/task.service';
 import { CommentService } from '../../service/comment.service';
 import { NotificationService } from '../../service/notification.service';
 import { UserService } from '../../service/user.service';
+import { ProjectService } from '../../service/project.service';
 
 @Controller('api/task')
 @UseGuards(AuthGuard, RolesGuard)
@@ -33,6 +34,7 @@ export class TaskController {
         private readonly commetService: CommentService,
         private readonly notificationService: NotificationService,
         private readonly userService: UserService,
+        private readonly projectService: ProjectService,
     ) {}
 
     @Post('/create-task')
@@ -74,6 +76,17 @@ export class TaskController {
     })
     async getAllTasksByProject(@Req() req: Request): Promise<TaskDTO[]> {
         let { projectId, status } = req.query;
+        const projects: any = await this.projectService.findAllByOptions({
+            relations: ['members'],
+            where: {
+                id: projectId,
+            },
+        });
+        if (!projects) return [];
+        const reqUser: any = req?.user;
+        const isMember = projects[0]?.members?.find(member => member?.id === reqUser?.id);
+        if (!isMember) return [];
+
         const tasks = await this.taskService.findAll({
             relations: ['usersAssign', 'reporter'],
             where: {
@@ -83,7 +96,6 @@ export class TaskController {
                 status: status,
             },
         });
-
         return tasks;
     }
 
