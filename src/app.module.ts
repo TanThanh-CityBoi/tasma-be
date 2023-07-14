@@ -9,6 +9,8 @@ import { ProjectModule } from './module/project.module';
 import { TaskModule } from './module/task.module';
 import { CommentModule } from './module/comment.module';
 import { OpenAIModule } from './module/openai.module';
+import { ScheduleModule } from '@nestjs/schedule';
+
 
 // jhipster-needle-add-entity-module-to-main-import - JHipster will import entity modules here, do not remove
 // jhipster-needle-add-controller-module-to-main-import - JHipster will import controller modules here, do not remove
@@ -20,6 +22,7 @@ import { OpenAIModule } from './module/openai.module';
         ServeStaticModule.forRoot({
             rootPath: config.getClientPath(),
         }),
+        ScheduleModule.forRoot(),
         AuthModule,
         // jhipster-needle-add-entity-module-to-main - JHipster will add entity modules here, do not remove
 

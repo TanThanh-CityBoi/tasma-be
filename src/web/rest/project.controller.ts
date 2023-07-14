@@ -10,7 +10,6 @@ import {
     Req,
     Put,
     Delete,
-    HttpException,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard, Roles, RolesGuard, RoleType } from '../../security';
@@ -19,7 +18,8 @@ import { ApiBearerAuth, ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/sw
 import { ProjectDTO } from '../../service/dto/project.dto';
 import { ProjectService } from '../../service/project.service';
 import { UserDTO } from '../../service/dto/user.dto';
-import { UserMapper } from 'src/service/mapper/user.mapper';
+import { NotificationService } from '../../service/notification.service';
+import { UserService } from '../../service/user.service';
 
 @Controller('api/project')
 @UseGuards(AuthGuard, RolesGuard)
@@ -29,7 +29,11 @@ import { UserMapper } from 'src/service/mapper/user.mapper';
 export class ProjectController {
     logger = new Logger('ProjectController');
 
-    constructor(private readonly projectService: ProjectService) {}
+    constructor(
+        private readonly projectService: ProjectService,
+        private readonly userService: UserService,
+        private readonly notificationService: NotificationService,
+    ) {}
 
     @Post('/create-project')
     @Roles(RoleType.USER)
@@ -116,8 +120,30 @@ export class ProjectController {
         description: 'The record has been successfully updated.',
         type: ProjectDTO,
     })
-    async addMember(@Body() projectDTO: ProjectDTO): Promise<ProjectDTO | undefined> {
+    async addMember(@Body() projectDTO: ProjectDTO, @Req() req: Request): Promise<ProjectDTO | undefined> {
+        console.log('🚀 ~ file: project.controller.ts:124 ~ ProjectController ~ addMember ~ projectDTO:', projectDTO);
+        const reqUser: any = req?.user;
+        const projectPreUpdate = await this.projectService.findById(projectDTO?.id);
+        const preMembers = projectPreUpdate?.members || [];
         const projectUpdated = await this.projectService.update(projectDTO);
+
+        const newMembers = projectUpdated?.members?.filter(member => {
+            const isMember = preMembers?.find(preMember => preMember?.id === member?.id);
+            return !isMember;
+        });
+
+        newMembers.forEach(async newMember => {
+            const memberInfo = await this.userService.findById(newMember?.id);
+            if (memberInfo) {
+                this.notificationService.inviteProject({
+                    projectName: projectDTO?.name,
+                    reqUser: reqUser?.login,
+                    projectId: projectDTO?.id,
+                    targetEmail: memberInfo?.email,
+                });
+            }
+        });
+
         return projectUpdated;
     }
 

@@ -4,12 +4,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProjectRepository } from '../repository/project.repository';
 import { ProjectController } from '../web/rest/project.controller';
 import { ProjectService } from '../service/project.service';
-
+import { NotificationService } from '../service/notification.service';
+import { UserModule } from './user.module';
+import { TaskRepository } from '../repository/task.repository';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([ProjectRepository])],
+    imports: [TypeOrmModule.forFeature([ProjectRepository]), UserModule],
     controllers: [ProjectController, ManagementController],
-    providers: [ProjectService],
+    providers: [ProjectService, NotificationService, TaskRepository],
     exports: [ProjectService],
 })
 export class ProjectModule {}

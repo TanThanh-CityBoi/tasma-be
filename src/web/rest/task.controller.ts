@@ -47,8 +47,8 @@ export class TaskController {
     })
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     async createTask(@Body() taskDTO: TaskDTO, @Req() req: Request): Promise<TaskDTO | undefined> {
-        const user: any = req.user;
-        taskDTO.createdBy = user.firstName || 'Anonymous';
+        const reqUser: any = req.user;
+        taskDTO.createdBy = reqUser.firstName || 'Anonymous';
 
         const taskCreated = await this.taskService.save(taskDTO);
         const usersAssign = taskCreated?.usersAssign || [];
@@ -57,8 +57,9 @@ export class TaskController {
             if (user) {
                 this.notificationService.assignedTask({
                     taskName: taskCreated?.name,
-                    reqUser: user?.login,
+                    reqUser: reqUser?.login,
                     projectId: taskCreated?.project?.id,
+                    targetEmail: user?.email,
                 });
             }
         });
@@ -66,8 +67,9 @@ export class TaskController {
         if (taskCreated?.reporter) {
             this.notificationService.reporterTask({
                 taskName: taskCreated?.name,
-                reqUser: user?.login,
+                reqUser: reqUser?.login,
                 projectId: taskCreated?.project?.id,
+                targetEmail: taskCreated?.reporter?.email,
             });
         }
 
@@ -163,7 +165,7 @@ export class TaskController {
                 stringUpdate += `   <div style="display: flex; align-items: center; margin-top: 50px"> 
                                         <div><b>${key.toUpperCase()} : </b></div> 
 
-                                        <div style="display: flex; align-items: center; justify-content: space-between; width: 500px; margin-left: 50px;">
+                                        <div style="display: flex; align-items: center; justify-content: space-between; min-width: 500px; margin-left: 50px;">
                                             <div style="text-decoration: line-through;"> ${taskPre[key]}</div> 
                                             <div style="display: flex; align-items: center; margin-left: 30px; margin-right: 30px"> <b style="font-size: 20px;"> &#129146; </b> </div>   
                                             <div>${taskDTO[key]}</div>
@@ -174,12 +176,27 @@ export class TaskController {
         });
         const taskUpdated = await this.taskService.update(taskDTO);
 
-        this.notificationService.updateTaskNotify({
-            taskName: taskDTO?.name,
-            reqUser: reqUser?.login,
-            projectId: taskDTO?.project?.id,
-            updateInfo: stringUpdate,
-        });
+        if (taskDTO?.usersAssign?.length > 0) {
+            taskDTO?.usersAssign?.forEach(async (item, _id) => {
+                this.notificationService.updateTaskNotify({
+                    taskName: taskDTO?.name,
+                    reqUser: reqUser?.login,
+                    projectId: taskDTO?.project?.id,
+                    updateInfo: stringUpdate,
+                    targetEmail: item?.email,
+                });
+            });
+        }
+
+        if (taskDTO?.reporter) {
+            this.notificationService.updateTaskNotify({
+                taskName: taskDTO?.name,
+                reqUser: reqUser?.login,
+                projectId: taskDTO?.project?.id,
+                updateInfo: stringUpdate,
+                targetEmail: taskDTO?.reporter?.email,
+            });
+        }
 
         return taskUpdated;
     }
