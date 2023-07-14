@@ -132,7 +132,7 @@ export class NotificationService {
                         subject: 'TASMA NOTIFICATION: EXPIRED TASK',
                         body: {
                             taskName: task?.name,
-                            dueDate: format(new Date(task?.dueDate), 'dd-MM-yyyy / HH:ss'),
+                            dueDate: format(new Date(task?.dueDate), 'dd-MM-yyyy / HH:mm'),
                             url: this.FE_URL + `/${task?.project?.id}`,
                         },
                     });
