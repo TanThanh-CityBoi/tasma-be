@@ -12,7 +12,7 @@ import fs from 'fs';
 export class NotificationService {
     constructor(@InjectRepository(TaskRepository) private taskRepository: TaskRepository) {}
 
-    FE_URL = process.env.FE_URL || 'http://localhost:3000/project/board';
+    FE_URL = (process.env.FE_URL || 'http://localhost:3000') + '/project/board';
 
     sendMail(data: any) {
         const transporter = nodemailer.createTransport({
