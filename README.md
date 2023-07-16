@@ -4,5 +4,5 @@
 
 
 ```
-Public Url:   http://3.93.242.107:8081
+Public Url:   https://tasma.work.gd
 ```
