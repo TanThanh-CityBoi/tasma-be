@@ -39,7 +39,7 @@ export class SeedUsersRoles1570200490072 implements MigrationInterface {
         password: '111111',
         firstName: 'Tan Thanh',
         lastName: 'Nguyen',
-        email: 'tanthanh@gmail.com',
+        email: '19522239@gm.uit.edu.vn',
         imageUrl: '/avatars/avatar-3.jpg',
         activated: true,
         langKey: 'en',
