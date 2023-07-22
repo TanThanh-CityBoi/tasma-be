@@ -1,11 +1,12 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, Not } from 'typeorm';
+import { FindManyOptions, Not, IsNull } from 'typeorm';
 import { ProjectRepository } from '../repository/project.repository';
 import { ProjectDTO } from './dto/project.dto';
 import { UserDTO } from './dto/user.dto';
 import { ProjectMapper } from './mapper/project.mapper';
 import { UserMapper } from './mapper/user.mapper';
+
 
 @Injectable()
 export class ProjectService {
@@ -26,7 +27,7 @@ export class ProjectService {
     }
 
     async findAll(userId: any): Promise<ProjectDTO[] | undefined> {
-        const result = await this.projectRepository.find({ relations: ['projectCategory', 'members', 'tasks'] });
+        const result = await this.projectRepository.find({ relations: ['projectCategory', 'members', 'tasks'], where: {deletedDate: IsNull()} });
         const projectsDTO: ProjectDTO[] = [];
 
         const resultFiltered = result.filter(project => {
@@ -42,7 +43,7 @@ export class ProjectService {
     }
 
     async findAllByOptions(options: FindManyOptions<ProjectDTO>): Promise<ProjectDTO[] | undefined> {
-        const result = await this.projectRepository.find(options);
+        const result = await this.projectRepository.find({where: {deletedDate: IsNull()}, ...options});
         const projectsDTO: ProjectDTO[] = [];
 
         result.forEach((project) => projectsDTO.push(ProjectMapper.fromEntityToDTO(project)));
@@ -95,9 +96,13 @@ export class ProjectService {
 
     async delete(id: number): Promise<ProjectDTO | undefined> {
         let projectToDelete = await this.findById(id);
-        const projectDeleted = await this.projectRepository.remove(projectToDelete);
+        const projectDeleted = await this.projectRepository.update({
+            id,
+        },{
+            deletedDate: new Date()
+        });
 
-        return ProjectMapper.fromEntityToDTO(projectDeleted);
+        return ProjectMapper.fromEntityToDTO(projectToDelete);
     }
 
     async listMembers(projectId: number): Promise<UserDTO[] | undefined> {

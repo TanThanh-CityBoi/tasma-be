@@ -20,6 +20,7 @@ import { ProjectService } from '../../service/project.service';
 import { UserDTO } from '../../service/dto/user.dto';
 import { NotificationService } from '../../service/notification.service';
 import { UserService } from '../../service/user.service';
+import { TaskService } from '../../service/task.service';
 
 @Controller('api/project')
 @UseGuards(AuthGuard, RolesGuard)
@@ -33,6 +34,7 @@ export class ProjectController {
         private readonly projectService: ProjectService,
         private readonly userService: UserService,
         private readonly notificationService: NotificationService,
+        private readonly taskService: TaskService,
     ) {}
 
     @Post('/create-project')
@@ -121,7 +123,6 @@ export class ProjectController {
         type: ProjectDTO,
     })
     async addMember(@Body() projectDTO: ProjectDTO, @Req() req: Request): Promise<ProjectDTO | undefined> {
-        console.log('🚀 ~ file: project.controller.ts:124 ~ ProjectController ~ addMember ~ projectDTO:', projectDTO);
         const reqUser: any = req?.user;
         const projectPreUpdate = await this.projectService.findById(projectDTO?.id);
         const preMembers = projectPreUpdate?.members || [];
@@ -156,7 +157,18 @@ export class ProjectController {
         type: ProjectDTO,
     })
     async deleteMember(@Body() projectDTO: ProjectDTO): Promise<ProjectDTO | undefined> {
+
+        // const preInfo = await this.projectService.findById(projectDTO?.id)
         const projectUpdated = await this.projectService.update(projectDTO);
+
+        // delete userAssign
+        // const newMembers = projectDTO?.members.map(val=>val?.id); 
+        // const deletedMember = preInfo?.members.filter((member)=> !newMembers.includes(member?.id) )
+        
+        // this.taskService.updateUserAssign({
+        //     deletedMember: deletedMember[0],
+        //     projectId: projectDTO?.id
+        // }) 
 
         return projectUpdated;
     }

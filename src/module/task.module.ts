@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ManagementController } from '../web/rest/management.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TaskRepository } from '../repository/task.repository';
@@ -10,7 +10,7 @@ import { UserModule } from './user.module';
 import { ProjectModule } from './project.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([TaskRepository]), CommentModule, UserModule, ProjectModule],
+    imports: [TypeOrmModule.forFeature([TaskRepository]), CommentModule, UserModule, forwardRef(() => ProjectModule)],
     controllers: [TaskController, ManagementController],
     providers: [TaskService, NotificationService],
     exports: [TaskService],

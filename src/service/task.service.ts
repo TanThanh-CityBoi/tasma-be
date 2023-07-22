@@ -4,6 +4,8 @@ import { FindManyOptions } from 'typeorm';
 import { TaskRepository } from '../repository/task.repository';
 import { TaskDTO } from './dto/task.dto';
 import { TaskMapper } from './mapper/task.mapper';
+import {getConnection, createQueryBuilder, getManager, getRepository} from "typeorm"; 
+
 
 @Injectable()
 export class TaskService {
@@ -51,6 +53,24 @@ export class TaskService {
         const taskUpdated = await this.findById(id);
 
         return TaskMapper.fromEntityToDTO(taskUpdated);
+    }
+
+    async updateUserAssign(data: any) {
+        // const { deletedMember, projectId } = data;
+        // const manager = getManager()
+
+        // const tasks = await this.taskRepository.createQueryBuilder('task')
+        // .leftJoinAndSelect('task.project', 'project')
+        // .leftJoinAndSelect('task.usersAssign', 'usersAssign')
+        // .where(`project.id = :projectId and usersAssign.id = :deleteId`, {projectId, deleteId: deletedMember?.id})
+        // .getMany()
+
+        // const ids = tasks.map(item => item?.id)
+
+        // await manager.getRepository('users_assign').createQueryBuilder() 
+        // .delete()
+        // .where('taskId IN (...:taskIds)', {taskIds: ids})
+        // .execute();
     }
 
 }

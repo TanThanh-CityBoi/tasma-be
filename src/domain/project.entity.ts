@@ -30,4 +30,7 @@ export class Project extends BaseEntity {
         task => task.project,
     )
     tasks?: Task[];
+
+    @Column({ nullable: true, type: 'timestamp'})
+    deletedDate?: Date;
 }
