@@ -54,6 +54,9 @@ export class TaskDTO extends BaseDTO {
            @ApiModelProperty({ example: 5, description: 'Original Estimate', required: false })
            originalEstimate?: number;
 
+           @ApiModelProperty({ example: '', description: 'Start Date', required: false })
+           startDate?: Date;
+
            @ApiModelProperty({ example: '', description: 'Due Date', required: false })
            dueDate?: Date;
 

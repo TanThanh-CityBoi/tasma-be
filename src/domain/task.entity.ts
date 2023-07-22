@@ -1,7 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm";
 import { BaseEntity } from "./base/base.entity";
 import { Comment } from "./comment.entity";
-import { ProjectCategory } from "./project-category.entity";
 import { Project } from "./project.entity";
 import { User } from "./user.entity";
 
@@ -48,7 +47,10 @@ export class Task extends BaseEntity {
     @Column({ default: 0 })
     originalEstimate?: number;
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    @Column({ type: 'timestamp', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
+    startDate?: Date;
+
+    @Column({ type: 'timestamp', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
     dueDate?: Date;
 
     @OneToMany(
