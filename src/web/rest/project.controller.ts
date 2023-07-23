@@ -158,17 +158,17 @@ export class ProjectController {
     })
     async deleteMember(@Body() projectDTO: ProjectDTO): Promise<ProjectDTO | undefined> {
 
-        // const preInfo = await this.projectService.findById(projectDTO?.id)
+        const preInfo = await this.projectService.findById(projectDTO?.id);
         const projectUpdated = await this.projectService.update(projectDTO);
 
         // delete userAssign
-        // const newMembers = projectDTO?.members.map(val=>val?.id); 
-        // const deletedMember = preInfo?.members.filter((member)=> !newMembers.includes(member?.id) )
-        
-        // this.taskService.updateUserAssign({
-        //     deletedMember: deletedMember[0],
-        //     projectId: projectDTO?.id
-        // }) 
+        const newMembers = projectDTO?.members.map(val => val?.id);
+        const deletedMember = preInfo?.members.filter(member => !newMembers.includes(member?.id));
+
+        this.taskService.updateUserAssign({
+            deletedMember: deletedMember[0],
+            projectId: projectDTO?.id,
+        });
 
         return projectUpdated;
     }

@@ -48,7 +48,7 @@ export class TaskService {
     async update(taskDTO: TaskDTO): Promise<TaskDTO | undefined> {
         const taskUpdate = TaskMapper.fromDTOtoEntity(taskDTO);
 
-        const {id} = await this.taskRepository.save(taskUpdate);
+        const { id } = await this.taskRepository.save({ ...taskUpdate, lastModifiedDate: new Date() });
 
         const taskUpdated = await this.findById(id);
 
@@ -56,21 +56,38 @@ export class TaskService {
     }
 
     async updateUserAssign(data: any) {
-        // const { deletedMember, projectId } = data;
-        // const manager = getManager()
+        const { deletedMember, projectId } = data;
 
-        // const tasks = await this.taskRepository.createQueryBuilder('task')
-        // .leftJoinAndSelect('task.project', 'project')
-        // .leftJoinAndSelect('task.usersAssign', 'usersAssign')
-        // .where(`project.id = :projectId and usersAssign.id = :deleteId`, {projectId, deleteId: deletedMember?.id})
-        // .getMany()
+        const tasks = await this.taskRepository
+            .createQueryBuilder('task')
+            .leftJoinAndSelect('task.project', 'project')
+            .leftJoinAndSelect('task.reporter', 'reporter')
+            .leftJoinAndSelect('task.usersAssign', 'usersAssign')
+            .where(`project.id = :projectId and ( usersAssign.id = :deleteId or reporter.id = :deleteId)`, {
+                projectId,
+                deleteId: deletedMember?.id,
+            })
+            .getMany();
 
-        // const ids = tasks.map(item => item?.id)
+        const taskIds = tasks.map(item => item?.id);
+        taskIds.map(async taskId => {
+            const taskDetail = await this.taskRepository.findOne({
+                relations: ['usersAssign', 'reporter'],
+                where: {
+                    id: taskId,
+                },
+            });
+            if (taskDetail) {
+                const newMembers = taskDetail?.usersAssign.filter(val => val?.id != deletedMember?.id);
 
-        // await manager.getRepository('users_assign').createQueryBuilder() 
-        // .delete()
-        // .where('taskId IN (...:taskIds)', {taskIds: ids})
-        // .execute();
+                this.taskRepository.save({
+                    ...taskDetail,
+                    usersAssign: newMembers,
+                    reporter: null,
+                });
+            }
+        });
+
     }
 
 }
