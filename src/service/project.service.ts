@@ -31,7 +31,7 @@ export class ProjectService {
         const projectsDTO: ProjectDTO[] = [];
 
         const resultFiltered = result.filter(project => {
-            const memberIds = project.members.map(mem => {
+            const memberIds = project?.members.map(mem => {
                 return mem?.id;
             });
             if(memberIds.includes(userId)) return true;
@@ -108,7 +108,7 @@ export class ProjectService {
     async listMembers(projectId: number): Promise<UserDTO[] | undefined> {
         const result = await this.findById(projectId);
         const usersDTO: UserDTO[] = [];
-        result.members?.forEach(user => usersDTO.push(UserMapper.fromEntityToDTO(user)));
+        result?.members?.forEach(user => usersDTO.push(UserMapper.fromEntityToDTO(user)));
         
         return usersDTO;
     }

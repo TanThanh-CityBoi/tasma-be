@@ -83,7 +83,7 @@ export class TaskService {
                 this.taskRepository.save({
                     ...taskDetail,
                     usersAssign: newMembers,
-                    reporter: null,
+                    reporter: taskDetail?.reporter?.id === deletedMember?.id ? null : taskDetail?.reporter,
                 });
             }
         });
